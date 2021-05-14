@@ -149,6 +149,10 @@
       <Project>{95904479-6e0e-4e12-8352-8958af268f11}</Project>
       <Name>DressShopBusinessLogic</Name>
     </ProjectReference>
+    <ProjectReference Include="..\DressShopFileImplement\DressShopFileImplement\DressShopFileImplement.csproj">
+      <Project>{c1ef1636-6622-4057-9e1f-c45f4761b0c1}</Project>
+      <Name>DressShopFileImplement</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ressShopListImplement\DressShopListImplement\DressShopListImplement.csproj">
       <Project>{388b52a1-f9f2-485f-867e-410327d3a629}</Project>
       <Name>DressShopListImplement</Name>

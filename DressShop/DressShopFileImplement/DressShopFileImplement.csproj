@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\AbstractShopBusinessLogic\DressShopBusinessLogic.csproj" />
+    <ProjectReference Include="..\..\ressShopListImplement\DressShopListImplement\DressShopListImplement.csproj" />
   </ItemGroup>
 
 </Project>
