@@ -32,6 +32,7 @@ namespace AbstractShopBusinessLogic.BusinessLogics
             _orderStorage.Insert(new OrderBindingModel
             {
                 DressId = model.DressId,
+                DressName = model.DressName,
                 Count = model.Count,
                 Sum = model.Sum,
                 DateCreate = DateTime.Now,
@@ -57,6 +58,7 @@ namespace AbstractShopBusinessLogic.BusinessLogics
             {
                 Id = order.Id,
                 DressId = order.DressId,
+                DressName = order.DressName,
                 Count = order.Count,
                 Sum = order.Sum,
                 DateCreate = order.DateCreate,
@@ -83,6 +85,7 @@ namespace AbstractShopBusinessLogic.BusinessLogics
             {
                 Id = order.Id,
                 DressId = order.DressId,
+                DressName = order.DressName,
                 Count = order.Count,
                 Sum = order.Sum,
                 DateCreate = order.DateCreate,

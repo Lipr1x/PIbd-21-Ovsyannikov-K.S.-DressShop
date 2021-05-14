@@ -66,6 +66,5 @@ namespace AbstractShopView
             DialogResult = DialogResult.Cancel;
             Close();
         }
-
     }
 }

@@ -81,6 +81,7 @@ namespace DressShopFileImplement.Implements
         private Order CreateModel(OrderBindingModel model, Order order)
         {
             order.DressId = model.DressId;
+            order.DressName = source.Dresses.FirstOrDefault(rec => rec.Id == model.DressId)?.DressName; 
             order.Count = model.Count;
             order.Sum = model.Sum;
             order.Status = model.Status;
@@ -95,6 +96,7 @@ namespace DressShopFileImplement.Implements
             {
                 Id = order.Id,
                 DressId = order.DressId,
+                DressName = order.DressName,
                 Count = order.Count,
                 Sum = order.Sum,
                 Status = order.Status,
