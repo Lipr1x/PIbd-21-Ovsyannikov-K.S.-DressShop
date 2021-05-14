@@ -11,30 +11,24 @@ namespace DressShopFileImplement.Implements
 {
     public class OrderStorage : IOrderStorage
     {
-        private readonly FileDataListSingleton source;
+        private readonly DataListSingleton source;
 
         public OrderStorage()
         {
-            source = FileDataListSingleton.GetInstance();
+            source = DataListSingleton.GetInstance();
         }
 
-        public List<OrderViewModel> GetFullList()
+        public void Delete(OrderBindingModel model)
         {
-            return source.Orders
-            .Select(CreateModel)
-            .ToList();
-        }
-
-        public List<OrderViewModel> GetFilteredList(OrderBindingModel model)
-        {
-            if (model == null)
+            for (int i = 0; i < source.Orders.Count; ++i)
             {
-                return null;
+                if (source.Orders[i].Id == model.Id)
+                {
+                    source.Orders.RemoveAt(i);
+                    return;
+                }
             }
-            return source.Orders
-            .Where(rec => rec.DateCreate == model.DateCreate)
-            .Select(CreateModel)
-            .ToList();
+            throw new Exception("Element not found");
         }
 
         public OrderViewModel GetElement(OrderBindingModel model)
@@ -43,48 +37,82 @@ namespace DressShopFileImplement.Implements
             {
                 return null;
             }
-            var Order = source.Orders
-            .FirstOrDefault(rec => rec.Id == model.Id);
-            return Order != null ? CreateModel(Order) : null;
+            foreach (var order in source.Orders)
+            {
+                if (order.Id == model.Id)
+                {
+                    return CreateModel(order);
+                }
+            }
+            return null;
+        }
+
+        public List<OrderViewModel> GetFilteredList(OrderBindingModel model)
+        {
+            if (model == null)
+            {
+                return null;
+            }
+            List<OrderViewModel> result = new List<OrderViewModel>();
+            foreach (var order in source.Orders)
+            {
+                if (order.DateCreate.Equals(model.DateCreate))
+                {
+                    result.Add(CreateModel(order));
+                }
+            }
+            return result;
+        }
+
+        public List<OrderViewModel> GetFullList()
+        {
+            List<OrderViewModel> result = new List<OrderViewModel>();
+            foreach (var order in source.Orders)
+            {
+                result.Add(CreateModel(order));
+            }
+            return result;
         }
 
         public void Insert(OrderBindingModel model)
         {
-            int maxId = source.Orders.Count > 0 ? source.Orders.Max(rec => rec.Id) : 0;
-            var element = new Order { Id = maxId + 1 };
-            source.Orders.Add(CreateModel(model, element));
+            Order tempOrder = new Order
+            {
+                Id = 1,
+            };
+            foreach (var order in source.Orders)
+            {
+                if (order.Id >= tempOrder.Id)
+                {
+                    tempOrder.Id = order.Id + 1;
+                }
+            }
+            source.Orders.Add(CreateModel(model, tempOrder));
         }
 
         public void Update(OrderBindingModel model)
         {
-            var element = source.Orders.FirstOrDefault(rec => rec.Id == model.Id);
-            if (element == null)
+            Order tempOrder = null;
+            foreach (var order in source.Orders)
             {
-                throw new Exception("Элемент не найден");
+                if (order.Id == model.Id)
+                {
+                    tempOrder = order;
+                }
             }
-            CreateModel(model, element);
-        }
-
-        public void Delete(OrderBindingModel model)
-        {
-            Order element = source.Orders.FirstOrDefault(rec => rec.Id == model.Id);
-            if (element != null)
+            if (tempOrder == null)
             {
-                source.Orders.Remove(element);
+                throw new Exception("Element not found");
             }
-            else
-            {
-                throw new Exception("Элемент не найден");
-            }
+            CreateModel(model, tempOrder);
         }
 
         private Order CreateModel(OrderBindingModel model, Order order)
         {
             order.DressId = model.DressId;
-            order.DressName = source.Dresses.FirstOrDefault(rec => rec.Id == model.DressId)?.DressName; 
             order.Count = model.Count;
-            order.Sum = model.Sum;
             order.Status = model.Status;
+            order.Sum = model.Sum;
             order.DateCreate = model.DateCreate;
             order.DateImplement = model.DateImplement;
             return order;
@@ -96,9 +124,9 @@ namespace DressShopFileImplement.Implements
             {
                 Id = order.Id,
                 DressId = order.DressId,
-                DressName = order.DressName,
+                DressName = source.Dresses.FirstOrDefault(Dress => Dress.Id == order.DressId).DressName,
                 Count = order.Count,
-                Sum = order.Sum,
+                Sum = order.Sum,    
                 Status = order.Status,
                 DateCreate = order.DateCreate,
                 DateImplement = order.DateImplement
