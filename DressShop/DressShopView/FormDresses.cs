@@ -101,7 +101,7 @@ namespace AbstractShopView
 
         private void FormDresses_Load(object sender, EventArgs e)
         {
-
+            LoadData();
         }
     }
 }

@@ -23,11 +23,7 @@ namespace AbstractShopView
 			InitializeComponent();
 			this._orderLogic = orderLogic;
 		}
-		private void FormMain_Load(object sender, EventArgs e)
-		{
-			LoadData();
-            var list = _orderLogic.Read(null);
-        }
+		
 		private void LoadData()
 		{
 			try
@@ -46,7 +42,13 @@ namespace AbstractShopView
 			   MessageBoxIcon.Error);
 			}
 		}
-		private void КомпонентыToolStripMenuItem_Click(object sender, EventArgs e)
+        private void FormMain_Load(object sender, EventArgs e)
+        {
+            LoadData();
+            var list = _orderLogic.Read(null);
+        }
+
+        private void КомпонентыToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			var form = Container.Resolve<FormComponents>();
 			form.ShowDialog();
