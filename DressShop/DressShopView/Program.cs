@@ -38,6 +38,8 @@ namespace AbstractShopView
 			currentContainer.RegisterType<OrderLogic>(new HierarchicalLifetimeManager());
 			currentContainer.RegisterType<DressLogic>(new
 		   HierarchicalLifetimeManager());
+			currentContainer.RegisterType<ReportLogic>(new
+		   HierarchicalLifetimeManager());
 			return currentContainer;
 		}
 	}

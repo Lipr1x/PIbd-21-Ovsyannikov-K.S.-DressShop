@@ -40,9 +40,9 @@ namespace DressShopDatabaseImplement.Implements
             using (var context = new DressShopDatabase())
             {
                 return context.Orders
-                    .Where(rec => rec.DressId == model.DressId)
-                    .Select(rec => new OrderViewModel
-                    {
+                    .Where(rec => rec.DateCreate >= model.DateFrom && rec.DateCreate <= model.DateTo)
+                .Select(rec => new OrderViewModel
+                {
                         Id = rec.Id,
                         DressName = rec.Dress.DressName,
                         DressId = rec.DressId,

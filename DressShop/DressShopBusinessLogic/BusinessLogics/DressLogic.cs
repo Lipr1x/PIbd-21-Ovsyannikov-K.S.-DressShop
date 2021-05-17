@@ -36,7 +36,7 @@ namespace AbstractShopBusinessLogic.BusinessLogics
             });
             if (element != null && element.Id != model.Id)
             {
-                throw new Exception("Уже есть подарок с таким названием");
+                throw new Exception("Уже есть платье с таким названием");
             }
             if (model.Id.HasValue)
             {

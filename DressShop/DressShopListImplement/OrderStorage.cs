@@ -1,13 +1,14 @@
 ﻿using AbstractShopBusinessLogic.BindingModels;
 using AbstractShopBusinessLogic.Interfaces;
 using AbstractShopBusinessLogic.ViewModels;
+using DressShopListImplement;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DressShopListImplement
+namespace DresseshopListImplement
 {
     public class OrderStorage : IOrderStorage
     {
@@ -16,6 +17,54 @@ namespace DressShopListImplement
         public OrderStorage()
         {
             source = DataListSingleton.GetInstance();
+        }
+
+        public void Delete(OrderBindingModel model)
+        {
+            //source.Orders.Remove(o=>o.Id==model.Id);
+
+            for (int i = 0; i < source.Orders.Count; ++i)
+            {
+                if (source.Orders[i].Id == model.Id)
+                {
+                    source.Orders.RemoveAt(i);
+                    return;
+                }
+            }
+            throw new Exception("Element not found");
+        }
+
+        public OrderViewModel GetElement(OrderBindingModel model)
+        {
+            if (model == null)
+            {
+                return null;
+            }
+            foreach (var order in source.Orders)
+            {
+                if (order.Id == model.Id)
+                {
+                    return CreateModel(order);
+                }
+            }
+            return null;
+        }
+
+        public List<OrderViewModel> GetFilteredList(OrderBindingModel model)
+        {
+            if (model == null)
+            {
+                return null;
+            }
+            List<OrderViewModel> result = new List<OrderViewModel>();
+            foreach (var order in source.Orders)
+            {
+                if (order.DateCreate.Equals(model.DateCreate))
+                {
+                    result.Add(CreateModel(order));
+                }
+            }
+            return result;
         }
 
         public List<OrderViewModel> GetFullList()
@@ -28,45 +77,11 @@ namespace DressShopListImplement
             return result;
         }
 
-        public List<OrderViewModel> GetFilteredList(OrderBindingModel model)
-        {
-            if (model == null)
-            {
-                return null;
-            }
-            List<OrderViewModel> result = new List<OrderViewModel>();
-            foreach (var order in source.Orders)
-            {
-                if (order.DressId == model.DressId)
-                {
-                    result.Add(CreateModel(order));
-                }
-            }
-            return result;
-        }
-
-        public OrderViewModel GetElement(OrderBindingModel model)
-        {
-            if (model == null)
-            {
-                return null;
-            }
-            foreach (var order in source.Orders)
-            {
-                if (order.Id == model.Id || order.DressId ==
-               model.DressId)
-                {
-                    return CreateModel(order);
-                }
-            }
-            return null;
-        }
-
         public void Insert(OrderBindingModel model)
         {
             Order tempOrder = new Order
             {
-                Id = 1
+                Id = 1,
             };
             foreach (var order in source.Orders)
             {
@@ -90,31 +105,17 @@ namespace DressShopListImplement
             }
             if (tempOrder == null)
             {
-                throw new Exception("Элемент не найден");
+                throw new Exception("Element not found");
             }
             CreateModel(model, tempOrder);
-        }
-
-        public void Delete(OrderBindingModel model)
-        {
-            for (int i = 0; i < source.Orders.Count; ++i)
-            {
-                if (source.Orders[i].Id == model.Id)
-                {
-                    source.Orders.RemoveAt(i);
-                    return;
-                }
-            }
-            throw new Exception("Элемент не найден");
         }
 
         private Order CreateModel(OrderBindingModel model, Order order)
         {
             order.DressId = model.DressId;
-            order.DressName = model.DressName;
             order.Count = model.Count;
-            order.Sum = model.Sum;
             order.Status = model.Status;
+            order.Sum = model.Sum;
             order.DateCreate = model.DateCreate;
             order.DateImplement = model.DateImplement;
             return order;
@@ -126,7 +127,7 @@ namespace DressShopListImplement
             {
                 Id = order.Id,
                 DressId = order.DressId,
-                DressName = source.Dresses.FirstOrDefault(d=>d.Id==order.DressId)?.DressName,
+                DressName = source.Dresses.FirstOrDefault(Dress => Dress.Id == order.DressId).DressName,
                 Count = order.Count,
                 Sum = order.Sum,
                 Status = order.Status,

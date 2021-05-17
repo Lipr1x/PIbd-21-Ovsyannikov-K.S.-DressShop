@@ -1,5 +1,6 @@
 ﻿using AbstractShopBusinessLogic.BindingModels;
 using AbstractShopBusinessLogic.BusinessLogics;
+using Microsoft.Reporting.WebForms;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -18,11 +19,13 @@ namespace AbstractShopView
 		[Dependency]
 		public new IUnityContainer Container { get; set; }
 		private readonly OrderLogic _orderLogic;
-		public FormMain(OrderLogic orderLogic)
+        private ReportLogic _reportLogic;
+		public FormMain(OrderLogic orderLogic, ReportLogic Report)
 		{
 			InitializeComponent();
 			this._orderLogic = orderLogic;
-		}
+            _reportLogic = Report;
+        }
 		
 		private void LoadData()
 		{
@@ -46,6 +49,7 @@ namespace AbstractShopView
         {
             LoadData();
             var list = _orderLogic.Read(null);
+           
         }
 
         private void КомпонентыToolStripMenuItem_Click(object sender, EventArgs e)
@@ -127,5 +131,32 @@ namespace AbstractShopView
 			LoadData();
 		}
 
-	}
+        private void компонентыПоПлатьямToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var form = Container.Resolve<FormReportDressComponents>();
+            form.ShowDialog();
+        }
+
+        private void списокКомпонентовToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            using (var dialog = new SaveFileDialog { Filter = "docx|*.docx" })
+            {
+                if (dialog.ShowDialog() == DialogResult.OK)
+                {
+                    _reportLogic.SaveComponentsToWordFile(new ReportBindingModel
+                    {
+                        FileName = dialog.FileName
+                    });
+                    MessageBox.Show("Выполнено", "Успех", MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
+                }
+            }
+        }
+
+        private void списокЗаказовToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var form = Container.Resolve<FormReportOrders>();
+            form.ShowDialog();
+        }
+    }
 }
