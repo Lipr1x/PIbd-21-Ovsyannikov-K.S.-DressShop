@@ -66,7 +66,8 @@ namespace DressShopDatabaseImplement.Implements
         {
             using (var context = new DressShopDatabase())
             {
-                context.Components.Add(CreateModel(model, new Component()));
+                Component com = CreateModel(model, new Component());
+                context.Components.Add(com);
                 context.SaveChanges();
             }
         }

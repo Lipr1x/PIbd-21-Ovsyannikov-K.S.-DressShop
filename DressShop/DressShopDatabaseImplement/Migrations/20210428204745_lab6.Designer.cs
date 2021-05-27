@@ -4,14 +4,16 @@ using DressShopDatabaseImplement;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DressShopDatabaseImplement.Migrations
 {
     [DbContext(typeof(DressShopDatabase))]
-    partial class DressShopDatabaseModelSnapshot : ModelSnapshot
+    [Migration("20210428204745_lab6")]
+    partial class lab6
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -110,7 +112,7 @@ namespace DressShopDatabaseImplement.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("Name")
+                    b.Property<string>("ImplementerFIO")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 

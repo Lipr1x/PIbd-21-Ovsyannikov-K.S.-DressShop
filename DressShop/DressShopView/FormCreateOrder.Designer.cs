@@ -87,7 +87,7 @@
             // 
             // ButtonSave
             // 
-            this.ButtonSave.Location = new System.Drawing.Point(37, 156);
+            this.ButtonSave.Location = new System.Drawing.Point(21, 164);
             this.ButtonSave.Name = "ButtonSave";
             this.ButtonSave.Size = new System.Drawing.Size(75, 23);
             this.ButtonSave.TabIndex = 6;
@@ -97,7 +97,7 @@
             // 
             // ButtonCancel
             // 
-            this.ButtonCancel.Location = new System.Drawing.Point(148, 156);
+            this.ButtonCancel.Location = new System.Drawing.Point(194, 164);
             this.ButtonCancel.Name = "ButtonCancel";
             this.ButtonCancel.Size = new System.Drawing.Size(75, 23);
             this.ButtonCancel.TabIndex = 7;
@@ -118,7 +118,7 @@
             // 
             this.maskedTextBox4.BackColor = System.Drawing.SystemColors.Menu;
             this.maskedTextBox4.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.maskedTextBox4.Location = new System.Drawing.Point(21, 113);
+            this.maskedTextBox4.Location = new System.Drawing.Point(21, 115);
             this.maskedTextBox4.Name = "maskedTextBox4";
             this.maskedTextBox4.Size = new System.Drawing.Size(68, 13);
             this.maskedTextBox4.TabIndex = 9;
@@ -127,7 +127,7 @@
             // comboBoxClient
             // 
             this.comboBoxClient.FormattingEnabled = true;
-            this.comboBoxClient.Location = new System.Drawing.Point(148, 110);
+            this.comboBoxClient.Location = new System.Drawing.Point(147, 115);
             this.comboBoxClient.Name = "comboBoxClient";
             this.comboBoxClient.Size = new System.Drawing.Size(121, 21);
             this.comboBoxClient.TabIndex = 10;
@@ -136,7 +136,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(287, 202);
+            this.ClientSize = new System.Drawing.Size(280, 225);
             this.Controls.Add(this.comboBoxClient);
             this.Controls.Add(this.maskedTextBox4);
             this.Controls.Add(this.comboBoxDress);

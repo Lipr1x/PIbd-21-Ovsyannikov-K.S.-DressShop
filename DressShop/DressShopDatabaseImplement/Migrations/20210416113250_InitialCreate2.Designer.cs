@@ -4,14 +4,16 @@ using DressShopDatabaseImplement;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DressShopDatabaseImplement.Migrations
 {
     [DbContext(typeof(DressShopDatabase))]
-    partial class DressShopDatabaseModelSnapshot : ModelSnapshot
+    [Migration("20210416113250_InitialCreate2")]
+    partial class InitialCreate2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -103,28 +105,6 @@ namespace DressShopDatabaseImplement.Migrations
                     b.ToTable("DressComponents");
                 });
 
-            modelBuilder.Entity("DressShopDatabaseImplement.Models.Implementer", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("PauseTime")
-                        .HasColumnType("int");
-
-                    b.Property<int>("WorkingTime")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Implementers");
-                });
-
             modelBuilder.Entity("DressShopDatabaseImplement.Models.Order", b =>
                 {
                     b.Property<int>("Id")
@@ -147,9 +127,6 @@ namespace DressShopDatabaseImplement.Migrations
                     b.Property<int>("DressId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("ImplementerId")
-                        .HasColumnType("int");
-
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
@@ -161,8 +138,6 @@ namespace DressShopDatabaseImplement.Migrations
                     b.HasIndex("ClientId");
 
                     b.HasIndex("DressId");
-
-                    b.HasIndex("ImplementerId");
 
                     b.ToTable("Orders");
                 });
@@ -195,10 +170,6 @@ namespace DressShopDatabaseImplement.Migrations
                         .HasForeignKey("DressId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.HasOne("DressShopDatabaseImplement.Models.Implementer", "Implementer")
-                        .WithMany("Orders")
-                        .HasForeignKey("ImplementerId");
                 });
 #pragma warning restore 612, 618
         }
