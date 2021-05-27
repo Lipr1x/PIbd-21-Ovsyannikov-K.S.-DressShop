@@ -13,17 +13,22 @@ using Unity;
 
 namespace AbstractShopView
 {
-    public partial class FormImplementers : Form
+    public partial class FormClients : Form
     {
         [Dependency]
         public new IUnityContainer Container { get; set; }
 
-        private readonly ImplementerLogic logic;
+        private readonly ClientLogic logic;
 
-        public FormImplementers(ImplementerLogic logic)
+        public FormClients(ClientLogic logic)
         {
             InitializeComponent();
             this.logic = logic;
+        }
+
+        private void FormClients_Load(object sender, EventArgs e)
+        {
+            LoadData();
         }
 
         private void LoadData()
@@ -34,24 +39,12 @@ namespace AbstractShopView
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK,
+               MessageBoxIcon.Error);
             }
         }
 
-        private void buttonEdit_Click(object sender, EventArgs e)
-        {
-            if (dataGridView.SelectedRows.Count == 1)
-            {
-                var form = Container.Resolve<FormImplementer>();
-                form.Id = Convert.ToInt32(dataGridView.SelectedRows[0].Cells[0].Value);
-                if (form.ShowDialog() == DialogResult.OK)
-                {
-                    LoadData();
-                }
-            }
-        }
-
-        private void buttonDelete_Click(object sender, EventArgs e)
+        private void ButtonDel_Click(object sender, EventArgs e)
         {
             if (dataGridView.SelectedRows.Count == 1)
             {
@@ -60,7 +53,7 @@ namespace AbstractShopView
                     int id = Convert.ToInt32(dataGridView.SelectedRows[0].Cells[0].Value);
                     try
                     {
-                        logic.Delete(new ImplementerBindingModel { Id = id });
+                        logic.Delete(new ClientBindingModel { Id = id });
                     }
                     catch (Exception ex)
                     {
@@ -71,24 +64,9 @@ namespace AbstractShopView
             }
         }
 
-        private void buttonRefresh_Click(object sender, EventArgs e)
+        private void ButtonRef_Click(object sender, EventArgs e)
         {
             LoadData();
         }
-
-        private void buttonAdd_Click(object sender, EventArgs e)
-        {
-            var form = Container.Resolve<FormImplementer>();
-            if (form.ShowDialog() == DialogResult.OK)
-            {
-                LoadData();
-            }
-        }
-
-        private void FormImplementers_Load(object sender, EventArgs e)
-        {
-            LoadData();
-        }
-     
     }
 }

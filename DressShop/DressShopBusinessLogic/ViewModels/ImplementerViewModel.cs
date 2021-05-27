@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AbstractShopBusinessLogic.Attributes;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text;
@@ -7,12 +8,15 @@ namespace AbstractShopBusinessLogic.ViewModels
 {
     public class ImplementerViewModel
     {
+        [Column(title: "Number", width: 100)]
         public int Id { get; set; }
-        [DisplayName("ФИО исполнителя")]
+
+        [Column(title: "Car", gridViewAutoSize: GridViewAutoSize.Fill)]
         public string Name { get; set; }
-        [DisplayName("Время на заказ")]
+
+        [Column(title: "Time to work", width: 100)]
         public int WorkingTime { get; set; }
-        [DisplayName("Время на перерыв")]
+        [Column(title: "Time to pause", width: 100)]
         public int PauseTime { get; set; }
     }
 }
