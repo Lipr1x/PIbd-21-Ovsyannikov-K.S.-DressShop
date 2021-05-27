@@ -1,4 +1,5 @@
 ﻿using AbstractShopBusinessLogic.BindingModels;
+using AbstractShopBusinessLogic.Enums;
 using AbstractShopBusinessLogic.Interfaces;
 using AbstractShopBusinessLogic.ViewModels;
 using System;
@@ -37,13 +38,20 @@ namespace DressShopListImplement
             List<OrderViewModel> result = new List<OrderViewModel>();
             foreach (var order in source.Orders)
             {
-                if (order.DateCreate >= model.DateFrom && order.DateCreate <= model.DateTo)
+
+                if ((!model.DateFrom.HasValue && !model.DateTo.HasValue && order.DateCreate.Date == model.DateCreate.Date) ||
+                (model.DateFrom.HasValue && model.DateTo.HasValue && order.DateCreate.Date >= model.DateFrom.Value.Date && order.DateCreate.Date <= model.DateTo.Value.Date) ||
+                (model.ClientId.HasValue && order.ClientId == model.ClientId) ||
+                (model.FreeOrders.HasValue && model.FreeOrders.Value && order.Status == OrderStatus.Принят) ||
+                (model.ImplementerId.HasValue && order.ImplementerId == model.ImplementerId && order.Status == OrderStatus.Выполняется))
                 {
                     result.Add(CreateModel(order));
                 }
             }
             return result;
         }
+
+
 
         public OrderViewModel GetElement(OrderBindingModel model)
         {
@@ -111,10 +119,11 @@ namespace DressShopListImplement
         private Order CreateModel(OrderBindingModel model, Order order)
         {
             order.DressId = model.DressId;
-            order.DressName = model.DressName;
+            order.ClientId = model.ClientId;
+            order.ImplementerId = model.ImplementerId;
             order.Count = model.Count;
-            order.Sum = model.Sum;
             order.Status = model.Status;
+            order.Sum = model.Sum;
             order.DateCreate = model.DateCreate;
             order.DateImplement = model.DateImplement;
             return order;
@@ -122,11 +131,39 @@ namespace DressShopListImplement
 
         private OrderViewModel CreateModel(Order order)
         {
+            string dressName = null;
+            foreach (var dress in source.Dresses)
+            {
+                if (dress.Id == order.DressId)
+                {
+                    dressName = dress.DressName;
+                }
+            }
+            string clientFIO = null;
+            foreach (var client in source.Clients)
+            {
+                if (client.Id == order.ClientId)
+                {
+                    clientFIO = client.ClientFIO;
+                }
+            }
+            string implementerName = null;
+            foreach (var implementer in source.Implementers)
+            {
+                if (implementer.Id == order.ImplementerId)
+                {
+                    implementerName = implementer.Name;
+                }
+            }
             return new OrderViewModel
             {
                 Id = order.Id,
                 DressId = order.DressId,
-                DressName = source.Dresses.FirstOrDefault(d=>d.Id==order.DressId)?.DressName,
+                DressName = dressName,
+                ClientId = order.ClientId.Value,
+                ClientFIO = clientFIO,
+                ImplementerId = order.ImplementerId.Value,
+                ImplementerName = implementerName,
                 Count = order.Count,
                 Sum = order.Sum,
                 Status = order.Status,

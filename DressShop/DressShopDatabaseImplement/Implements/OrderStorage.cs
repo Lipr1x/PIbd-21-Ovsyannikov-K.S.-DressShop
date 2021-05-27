@@ -1,7 +1,9 @@
 ﻿using AbstractShopBusinessLogic.BindingModels;
+using AbstractShopBusinessLogic.Enums;
 using AbstractShopBusinessLogic.Interfaces;
 using AbstractShopBusinessLogic.ViewModels;
 using DressShopDatabaseImplement.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,18 +18,10 @@ namespace DressShopDatabaseImplement.Implements
             using (var context = new DressShopDatabase())
             {
                 return context.Orders
-                    .Select(rec => new OrderViewModel
-                    {
-                        Id = rec.Id,
-                        DressId = rec.DressId,
-                        DressName = rec.Dress.DressName,
-                        Count = rec.Count,
-                        Sum = rec.Sum,
-                        Status = rec.Status,
-                        DateCreate = rec.DateCreate,
-                        DateImplement = rec.DateImplement
-                    })
-                    .ToList();
+                    .Include(rec => rec.Dress)
+                    .Include(rec => rec.Client)
+                    .Include(rec => rec.Implementer)
+                    .Select(CreateModel).ToList();
             }
         }
         public List<OrderViewModel> GetFilteredList(OrderBindingModel model)
@@ -36,23 +30,23 @@ namespace DressShopDatabaseImplement.Implements
             {
                 return null;
             }
-
             using (var context = new DressShopDatabase())
             {
                 return context.Orders
-                    .Where(rec => rec.DateCreate >= model.DateFrom && rec.DateCreate <= model.DateTo)
-                .Select(rec => new OrderViewModel
-                {
-                        Id = rec.Id,
-                        DressName = rec.Dress.DressName,
-                        DressId = rec.DressId,
-                        Count = rec.Count,
-                        Sum = rec.Sum,
-                        Status = rec.Status,
-                        DateCreate = rec.DateCreate,
-                        DateImplement = rec.DateImplement
-                    })
-                    .ToList();
+                    .Include(rec => rec.Dress)
+                    .Include(rec => rec.Client)
+                    .Include(rec => rec.Implementer)
+                    .Where(rec => (!model.DateFrom.HasValue && !model.DateTo.HasValue &&
+                    rec.DateCreate.Date == model.DateCreate.Date) ||
+                     (model.DateFrom.HasValue && model.DateTo.HasValue &&
+                    rec.DateCreate.Date >= model.DateFrom.Value.Date && rec.DateCreate.Date <=
+                    model.DateTo.Value.Date) ||
+                     (model.ClientId.HasValue && rec.ClientId == model.ClientId) ||
+                    (model.FreeOrders.HasValue && model.FreeOrders.Value && rec.Status ==
+                    OrderStatus.Принят) ||
+                     (model.ImplementerId.HasValue && rec.ImplementerId ==
+                    model.ImplementerId && rec.Status == OrderStatus.Выполняется))
+                    .Select(CreateModel).ToList();
             }
         }
         public OrderViewModel GetElement(OrderBindingModel model)
@@ -65,20 +59,13 @@ namespace DressShopDatabaseImplement.Implements
             using (var context = new DressShopDatabase())
             {
                 var order = context.Orders
+                    .Include(rec => rec.Dress)
+                    .Include(rec => rec.Client)
+                    .Include(rec => rec.Implementer)
                     .FirstOrDefault(rec => rec.Id == model.Id);
 
                 return order != null ?
-                    new OrderViewModel
-                    {
-                        Id = order.Id,
-                        DressName = context.Dresses.FirstOrDefault(rec => rec.Id == order.DressId)?.DressName,
-                        DressId = order.DressId,
-                        Count = order.Count,
-                        Sum = order.Sum,
-                        Status = order.Status,
-                        DateCreate = order.DateCreate,
-                        DateImplement = order.DateImplement
-                    } :
+                    CreateModel(order) :
                     null;
             }
         }
@@ -120,16 +107,37 @@ namespace DressShopDatabaseImplement.Implements
                 context.SaveChanges();
             }
         }
+        private OrderViewModel CreateModel(Order order)
+        {
+            return new OrderViewModel
+            {
+                Id = order.Id,
+                DressId = order.DressId,
+                ClientId = order.ClientId,
+                ImplementerId = order.ImplementerId,
+                ClientFIO = order.Client.ClientFIO,
+                DressName = order.Dress.DressName,
+                Count = order.Count,
+                Sum = order.Sum,
+                Status = order.Status,
+                DateCreate = order.DateCreate,
+                DateImplement = order?.DateImplement,
+                ImplementerName = order.ImplementerId.HasValue ?
+                order.Implementer.Name : string.Empty
+            };
+        }
+
         private Order CreateModel(OrderBindingModel model, Order order)
         {
-                order.DressId = model.DressId;
-                order.Sum = model.Sum;
-                order.Count = model.Count;
-                order.Status = model.Status;
-                order.DateCreate = model.DateCreate;
-                order.DateImplement = model.DateImplement;
-
-                return order;
+            order.DressId = model.DressId;
+            order.ClientId = model.ClientId.Value;
+            order.ImplementerId = model.ImplementerId;
+            order.Count = model.Count;
+            order.Status = model.Status;
+            order.Sum = model.Sum;
+            order.DateCreate = model.DateCreate;
+            order.DateImplement = model.DateImplement;
+            return order;
         }
     }
 }
