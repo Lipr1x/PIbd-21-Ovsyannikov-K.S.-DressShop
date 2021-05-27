@@ -7,8 +7,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{86C0A322-C224-4114-A945-129A6A6CBBEE}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>DressShopView</RootNamespace>
-    <AssemblyName>DressShopView</AssemblyName>
+    <RootNamespace>AbstractShopView</RootNamespace>
+    <AssemblyName>AbstractShopView</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -301,7 +301,6 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
     </Compile>
     <EmbeddedResource Include="Report.rdlc" />
     <None Include="packages.config" />

@@ -5,28 +5,29 @@ using System.Xml.Linq;
 using System.Xml.Serialization;
 using System.IO;
 using System.Linq;
-using DressShopListImplement;
 using AbstractShopBusinessLogic.Enums;
+using DressShopFileImplement.Models;
 
 namespace DressShopFileImplement
 {
 	public class FileDataListSingleton
 	{
 		private static FileDataListSingleton instance;
-
 		private readonly string ComponentFileName = "Component.xml";
 		private readonly string OrderFileName = "Order.xml";
 		private readonly string DressFileName = "Dress.xml";
-
+		private readonly string ClientFileName = "Client.xml";
 		public List<Component> Components { get; set; }
 		public List<Order> Orders { get; set; }
 		public List<Dress> Dresses { get; set; }
+		public List<Client> Clients { get; set; }
 
 		private FileDataListSingleton()
 		{
 			Components = LoadComponents();
 			Orders = LoadOrders();
 			Dresses = LoadDresses();
+			Clients = LoadClients();
 		}
 
 		public static FileDataListSingleton GetInstance()
@@ -43,6 +44,7 @@ namespace DressShopFileImplement
 			SaveComponents();
 			SaveOrders();
 			SaveDresses();
+			SaveClients();
 		}
 
 		private List<Component> LoadComponents()
@@ -151,6 +153,27 @@ namespace DressShopFileImplement
 			return list;
 		}
 
+		private List<Client> LoadClients()
+		{
+			var list = new List<Client>();
+			if (File.Exists(ClientFileName))
+			{
+				XDocument xDocument = XDocument.Load(ClientFileName);
+				var xElements = xDocument.Root.Elements("Clients").ToList();
+				foreach (var elem in xElements)
+				{
+					list.Add(new Client
+					{
+						Id = Convert.ToInt32(elem.Attribute("Id").Value),
+						ClientFIO = elem.Element("ClientFIO").Value,
+						Email = elem.Element("Email").Value,
+						Password = elem.Element("Password").Value
+					});
+				}
+			}
+			return list;
+		}
+
 		private void SaveComponents()
 		{
 			if (Components != null)
@@ -212,6 +235,24 @@ namespace DressShopFileImplement
 				}
 				XDocument xDocument = new XDocument(xElement);
 				xDocument.Save(DressFileName);
+			}
+		}
+
+		private void SaveClients()
+		{
+			if (Clients != null)
+			{
+				var xElement = new XElement("Clients");
+				foreach (var client in Clients)
+				{
+					xElement.Add(new XElement("Client",
+					new XAttribute("Id", client.Id),
+					new XElement("ClientFIO", client.ClientFIO),
+					new XElement("Email", client.Email),
+					new XElement("Password", client.Password)));
+				}
+				XDocument xDocument = new XDocument(xElement);
+				xDocument.Save(ClientFileName);
 			}
 		}
 	}

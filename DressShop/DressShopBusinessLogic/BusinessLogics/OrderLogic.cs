@@ -36,7 +36,8 @@ namespace AbstractShopBusinessLogic.BusinessLogics
                 Count = model.Count,
                 Sum = model.Sum,
                 DateCreate = DateTime.Now,
-                Status = OrderStatus.Принят
+                Status = OrderStatus.Принят,
+                ClientId = model.ClientId
             });
         }
         public void TakeOrderInWork(ChangeStatusBindingModel model)

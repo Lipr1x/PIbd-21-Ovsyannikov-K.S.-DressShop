@@ -82,7 +82,7 @@ namespace AbstractShopBusinessLogic.BusinessLogics
             SaveToExcel.CreateDoc(new ExcelInfo
             {
                 FileName = model.FileName,
-                Title = "Список изделий",
+                Title = "Список компонент",
                 Dresses = GetDressComponent()
             });
         }

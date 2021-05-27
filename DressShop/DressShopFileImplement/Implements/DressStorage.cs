@@ -1,7 +1,7 @@
 ﻿using AbstractShopBusinessLogic.BindingModels;
 using AbstractShopBusinessLogic.Interfaces;
 using AbstractShopBusinessLogic.ViewModels;
-using DressShopListImplement;
+using DressShopFileImplement.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
