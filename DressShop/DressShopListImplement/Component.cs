@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 namespace DressShopListImplement
 {
     public class Component
-    {
-        public int Id { get; set; }
-        public string ComponentName { get; set; }
-    }
+	{
+		public int Id { get; set; }
+		public string ComponentName { get; set; }
+	}
 }

@@ -14,29 +14,40 @@ using Unity;
 
 namespace AbstractShopView
 {
-	public partial class FormCreateOrder : Form
-	{
+    public partial class FormCreateOrder : Form
+    {
         [Dependency]
         public new IUnityContainer Container { get; set; }
-        private readonly DressLogic _logicP;
+        private readonly DressLogic _logicG;
         private readonly OrderLogic _logicO;
-        public FormCreateOrder(DressLogic logicP, OrderLogic logicO)
+        private readonly ClientLogic _logicC;
+        public FormCreateOrder(DressLogic logicG, OrderLogic logicO, ClientLogic logicC)
         {
             InitializeComponent();
-            _logicP = logicP;
+            _logicG = logicG;
             _logicO = logicO;
+            _logicC = logicC;
         }
+
         private void FormCreateOrder_Load(object sender, EventArgs e)
         {
             try
             {
-                var list = _logicP.Read(null);
-                if (list != null)
+                List<DressViewModel> listDresss = _logicG.Read(null);
+                if (listDresss != null)
                 {
-                    comboBoxDress.DataSource = list;
                     comboBoxDress.DisplayMember = "DressName";
                     comboBoxDress.ValueMember = "Id";
+                    comboBoxDress.DataSource = listDresss;
                     comboBoxDress.SelectedItem = null;
+                }
+                List<ClientViewModel> listClients = _logicC.Read(null);
+                if (listClients != null)
+                {
+                    comboBoxClient.DisplayMember = "ClientFIO";
+                    comboBoxClient.ValueMember = "Id";
+                    comboBoxClient.DataSource = listClients;
+                    comboBoxClient.SelectedItem = null;
                 }
             }
             catch (Exception ex)
@@ -48,17 +59,19 @@ namespace AbstractShopView
 
         private void CalcSum()
         {
-            if (comboBoxDress.SelectedValue != null && !string.IsNullOrEmpty(textBoxCount.Text))
+            if (comboBoxDress.SelectedValue != null &&
+           !string.IsNullOrEmpty(textBoxCount.Text))
             {
                 try
                 {
                     int id = Convert.ToInt32(comboBoxDress.SelectedValue);
-                    DressViewModel dress = _logicP.Read(new DressBindingModel
+                    DressViewModel Dress = _logicG.Read(new DressBindingModel
                     {
-                        Id = id
+                        Id
+                    = id
                     })?[0];
                     int count = Convert.ToInt32(textBoxCount.Text);
-                    textBoxSum.Text = (count * dress?.Price ?? 0).ToString();
+                    textBoxSum.Text = (count * Dress?.Price ?? 0).ToString();
                 }
                 catch (Exception ex)
                 {
@@ -68,17 +81,17 @@ namespace AbstractShopView
             }
         }
 
-        private void TextBoxCount_TextChanged(object sender, EventArgs e)
+        private void textBoxCount_TextChanged(object sender, EventArgs e)
         {
             CalcSum();
         }
 
-        private void ComboBoxDress_SelectedIndexChanged(object sender, EventArgs e)
+        private void comboBoxDress_SelectedIndexChanged(object sender, EventArgs e)
         {
             CalcSum();
         }
 
-        private void ButtonSave_Click(object sender, EventArgs e)
+        private void buttonSave_Click(object sender, EventArgs e)
         {
             if (string.IsNullOrEmpty(textBoxCount.Text))
             {
@@ -92,10 +105,17 @@ namespace AbstractShopView
                MessageBoxIcon.Error);
                 return;
             }
+            if (comboBoxClient.SelectedValue == null)
+            {
+                MessageBox.Show("Выберите клиента", "Ошибка", MessageBoxButtons.OK,
+               MessageBoxIcon.Error);
+                return;
+            }
             try
             {
                 _logicO.CreateOrder(new CreateOrderBindingModel
                 {
+                    ClientId = Convert.ToInt32(comboBoxClient.SelectedValue),
                     DressId = Convert.ToInt32(comboBoxDress.SelectedValue),
                     Count = Convert.ToInt32(textBoxCount.Text),
                     Sum = Convert.ToDecimal(textBoxSum.Text)
@@ -112,11 +132,10 @@ namespace AbstractShopView
             }
         }
 
-        private void ButtonCancel_Click(object sender, EventArgs e)
+        private void buttonCancel_Click(object sender, EventArgs e)
         {
             DialogResult = DialogResult.Cancel;
             Close();
         }
-
     }
 }
