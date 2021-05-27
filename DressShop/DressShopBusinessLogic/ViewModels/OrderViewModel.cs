@@ -4,12 +4,14 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text;
 using System.Runtime.Serialization;
+using AbstractShopBusinessLogic.Attributes;
 
 namespace AbstractShopBusinessLogic.ViewModels
 {
     [DataContract]
     public class OrderViewModel
     {
+        [Column(title: "Number", width: 100)]
         [DataMember]
         public int Id { get; set; }
 
@@ -23,35 +25,35 @@ namespace AbstractShopBusinessLogic.ViewModels
         public int DressId { get; set; }
 
         [DataMember]
-        [DisplayName("Клиент")]
+        [Column(title: "Client", width: 150)]
         public string ClientFIO { get; set; }
 
         [DataMember]
-        [DisplayName("Исполнитель")]
+        [Column(title: "Implementer", width: 150)]
         public string ImplementerName { get; set; }
 
         [DataMember]
-        [DisplayName("Изделие")]
+        [Column(title: "Dress", gridViewAutoSize: GridViewAutoSize.Fill)]
         public string DressName { get; set; }
 
         [DataMember]
-        [DisplayName("Количество")]
+        [Column(title: "Quantity", width: 100)]
         public int Count { get; set; }
 
         [DataMember]
-        [DisplayName("Сумма")]
+        [Column(title: "Sum", width: 50)]
         public decimal Sum { get; set; }
 
         [DataMember]
-        [DisplayName("Статус")]
+        [Column(title: "Status", width: 100)]
         public OrderStatus Status { get; set; }
 
         [DataMember]
-        [DisplayName("Дата создания")]
+        [Column(title: "Creation date", width: 100)]
         public DateTime DateCreate { get; set; }
 
         [DataMember]
-        [DisplayName("Дата выполнения")]
+        [Column(title: "Complition date", width: 100)]
         public DateTime? DateImplement { get; set; }
     }
 }
