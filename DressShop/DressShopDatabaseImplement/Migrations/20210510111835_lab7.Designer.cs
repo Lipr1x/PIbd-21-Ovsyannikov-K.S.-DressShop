@@ -4,14 +4,16 @@ using DressShopDatabaseImplement;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DressShopDatabaseImplement.Migrations
 {
     [DbContext(typeof(DressShopDatabase))]
-    partial class DressShopDatabaseModelSnapshot : ModelSnapshot
+    [Migration("20210510111835_lab7")]
+    partial class lab7
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

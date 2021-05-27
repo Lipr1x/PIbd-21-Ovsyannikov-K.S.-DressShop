@@ -11,11 +11,11 @@ namespace DressShopFileImplement.Implements
 {
 	public class ComponentStorage : IComponentStorage
 	{
-		private readonly FileDataListSingleton source;
+		private readonly FileDataFileSingleton source;
 
 		public ComponentStorage()
 		{
-			source = FileDataListSingleton.GetInstance();
+			source = FileDataFileSingleton.GetInstance();
 		}
 
 		public List<ComponentViewModel> GetFullList()

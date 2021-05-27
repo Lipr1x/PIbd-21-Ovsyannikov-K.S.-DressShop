@@ -17,16 +17,23 @@ namespace DressShowClientApp.Controllers
         public HomeController()
         {
         }
-
         public IActionResult Index()
         {
             if (Program.Client == null)
             {
                 return Redirect("~/Home/Enter");
             }
-            return View(APIClient.GetRequest<List<OrderViewModel>>($"api/main/getorders?clientId={Program.Client.Id}"));
+            return
+            View(APIClient.GetRequest<List<OrderViewModel>>($"api/main/getorders?clientId={Program.Client.Id}"));
         }
-
+        public IActionResult Mail()
+        {
+            if (Program.Client == null)
+            {
+                return Redirect("~/Home/Enter");
+            }
+            return View(APIClient.GetRequest<List<MessageInfoViewModel>>($"api/client/getmessages?clientId={Program.Client.Id}"));
+        }
         [HttpGet]
         public IActionResult Privacy()
         {
@@ -36,13 +43,12 @@ namespace DressShowClientApp.Controllers
             }
             return View(Program.Client);
         }
-
         [HttpPost]
         public void Privacy(string login, string password, string fio)
         {
-            if (!string.IsNullOrEmpty(login) && !string.IsNullOrEmpty(password) && !string.IsNullOrEmpty(fio))
+            if (!string.IsNullOrEmpty(login) && !string.IsNullOrEmpty(password)
+            && !string.IsNullOrEmpty(fio))
             {
-                //прописать запрос
                 APIClient.PostRequest("api/client/updatedata", new ClientBindingModel
                 {
                     Id = Program.Client.Id,
@@ -56,50 +62,48 @@ namespace DressShowClientApp.Controllers
                 Response.Redirect("Index");
                 return;
             }
-            throw new Exception("Enter login, password and full name");
+            throw new Exception("Введите логин, пароль и ФИО");
         }
-
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
             return View(new ErrorViewModel
             {
-                RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier
+                RequestId = Activity.Current?.Id ??
+            HttpContext.TraceIdentifier
             });
         }
-
         [HttpGet]
         public IActionResult Enter()
         {
             return View();
         }
-
         [HttpPost]
         public void Enter(string login, string password)
         {
             if (!string.IsNullOrEmpty(login) && !string.IsNullOrEmpty(password))
             {
-                Program.Client = APIClient.GetRequest<ClientViewModel>($"api/client/login?login={login}&password={password}");
+                Program.Client =
+                APIClient.GetRequest<ClientViewModel>($"api/client/login?login={login}&password={password}");
                 if (Program.Client == null)
                 {
-                    throw new Exception("Invalid username / password");
+                    throw new Exception("Неверный логин/пароль");
                 }
                 Response.Redirect("Index");
                 return;
             }
-            throw new Exception("Enter login, password");
+            throw new Exception("Введите логин, пароль");
         }
-
         [HttpGet]
         public IActionResult Register()
         {
             return View();
         }
-
         [HttpPost]
         public void Register(string login, string password, string fio)
         {
-            if (!string.IsNullOrEmpty(login) && !string.IsNullOrEmpty(password) && !string.IsNullOrEmpty(fio))
+            if (!string.IsNullOrEmpty(login) && !string.IsNullOrEmpty(password)
+            && !string.IsNullOrEmpty(fio))
             {
                 APIClient.PostRequest("api/client/register", new ClientBindingModel
                 {
@@ -110,16 +114,15 @@ namespace DressShowClientApp.Controllers
                 Response.Redirect("Enter");
                 return;
             }
-            throw new Exception("Enter login, password and full name");
+            throw new Exception("Введите логин, пароль и ФИО");
         }
-
         [HttpGet]
         public IActionResult Create()
         {
-            ViewBag.Dresses = APIClient.GetRequest<List<DressViewModel>>("api/main/getdresslist");
+            ViewBag.Dresses =
+            APIClient.GetRequest<List<DressViewModel>>("api/main/getdresslist");
             return View();
         }
-
         [HttpPost]
         public void Create(int dress, int count, decimal sum)
         {
@@ -127,22 +130,20 @@ namespace DressShowClientApp.Controllers
             {
                 return;
             }
-            var str = Program.Client.Id;
-            //прописать запрос
             APIClient.PostRequest("api/main/createorder", new CreateOrderBindingModel
             {
                 DressId = dress,
-                ClientId = Program.Client.Id.Value,
+                ClientId = (int)Program.Client.Id,
                 Sum = sum,
                 Count = count
             });
             Response.Redirect("Index");
         }
-
         [HttpPost]
         public decimal Calc(decimal count, int dress)
         {
-            DressViewModel prod = APIClient.GetRequest<DressViewModel>($"api/main/getdress?dressId={dress}");
+            DressViewModel prod =
+            APIClient.GetRequest<DressViewModel>($"api/main/getdress?dressId={dress}");
             return count * prod.Price;
         }
     }

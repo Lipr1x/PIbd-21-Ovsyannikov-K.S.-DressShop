@@ -11,11 +11,11 @@ namespace DressShopFileImplement.Implements
 {
     class ImplementerStorage : IImplementerStorage
     {
-        private readonly FileDataListSingleton source;
+        private readonly FileDataFileSingleton source;
 
         public ImplementerStorage()
         {
-            source = FileDataListSingleton.GetInstance();
+            source = FileDataFileSingleton.GetInstance();
         }
 
         public List<ImplementerViewModel> GetFullList()
