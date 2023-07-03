@@ -1,7 +1,7 @@
 ﻿using AbstractShopBusinessLogic.BindingModels;
 using AbstractShopBusinessLogic.Interfaces;
 using AbstractShopBusinessLogic.ViewModels;
-using DressShopListImplement;
+using DressShopFileImplement.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,11 +11,11 @@ namespace DressShopFileImplement.Implements
 {
 	public class ComponentStorage : IComponentStorage
 	{
-		private readonly FileDataListSingleton source;
+		private readonly FileDataFileSingleton source;
 
 		public ComponentStorage()
 		{
-			source = FileDataListSingleton.GetInstance();
+			source = FileDataFileSingleton.GetInstance();
 		}
 
 		public List<ComponentViewModel> GetFullList()

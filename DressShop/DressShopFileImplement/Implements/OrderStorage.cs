@@ -1,7 +1,8 @@
 ﻿using AbstractShopBusinessLogic.BindingModels;
+using AbstractShopBusinessLogic.Enums;
 using AbstractShopBusinessLogic.Interfaces;
 using AbstractShopBusinessLogic.ViewModels;
-using DressShopListImplement;
+using DressShopFileImplement.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,11 +12,11 @@ namespace DressShopFileImplement.Implements
 {
     public class OrderStorage : IOrderStorage
     {
-        private readonly FileDataListSingleton source;
+        private readonly FileDataFileSingleton source;
 
         public OrderStorage()
         {
-            source = FileDataListSingleton.GetInstance();
+            source = FileDataFileSingleton.GetInstance();
         }
 
         public List<OrderViewModel> GetFullList()
@@ -31,10 +32,15 @@ namespace DressShopFileImplement.Implements
             {
                 return null;
             }
-            return source.Orders
-            .Where(rec => rec.DateCreate == model.DateCreate)
-            .Select(CreateModel)
-            .ToList();
+            return source.Orders.Where(rec => (!model.DateFrom.HasValue &&
+               !model.DateTo.HasValue && rec.DateCreate.Date == model.DateCreate.Date) ||
+               (model.DateFrom.HasValue && model.DateTo.HasValue && rec.DateCreate.Date >=
+               model.DateFrom.Value.Date && rec.DateCreate.Date <= model.DateTo.Value.Date) ||
+               (model.ClientId.HasValue && rec.ClientId == model.ClientId) ||
+               (model.FreeOrders.HasValue && model.FreeOrders.Value && rec.Status == OrderStatus.Принят) ||
+               (model.ImplementerId.HasValue && rec.ImplementerId == model.ImplementerId && rec.Status == OrderStatus.Выполняется))
+               .Select(CreateModel)
+               .ToList();
         }
 
         public OrderViewModel GetElement(OrderBindingModel model)
@@ -81,10 +87,11 @@ namespace DressShopFileImplement.Implements
         private Order CreateModel(OrderBindingModel model, Order order)
         {
             order.DressId = model.DressId;
-            order.DressName = source.Dresses.FirstOrDefault(rec => rec.Id == model.DressId)?.DressName; 
+            order.ClientId = model.ClientId.Value;
+            order.ImplementerId = model.ImplementerId.Value;
             order.Count = model.Count;
-            order.Sum = model.Sum;
             order.Status = model.Status;
+            order.Sum = model.Sum;
             order.DateCreate = model.DateCreate;
             order.DateImplement = model.DateImplement;
             return order;
@@ -96,12 +103,16 @@ namespace DressShopFileImplement.Implements
             {
                 Id = order.Id,
                 DressId = order.DressId,
-                DressName = order.DressName,
+                ClientId = order.ClientId.Value,
+                ClientFIO = source.Clients.FirstOrDefault(client => client.Id == order.ClientId)?.ClientFIO,
+                DressName = source.Dresses.FirstOrDefault(gift => gift.Id == order.DressId)?.DressName,
+                ImplementerId = order.ImplementerId.Value,
+                ImplementerName = source.Implementers.FirstOrDefault(implementer => implementer.Id == order.ImplementerId)?.Name,
                 Count = order.Count,
                 Sum = order.Sum,
                 Status = order.Status,
                 DateCreate = order.DateCreate,
-                DateImplement = order.DateImplement
+                DateImplement = order?.DateImplement
             };
         }
     }

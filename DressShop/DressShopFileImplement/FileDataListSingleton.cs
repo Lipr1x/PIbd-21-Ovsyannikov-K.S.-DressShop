@@ -5,8 +5,8 @@ using System.Xml.Linq;
 using System.Xml.Serialization;
 using System.IO;
 using System.Linq;
-using DressShopListImplement;
 using AbstractShopBusinessLogic.Enums;
+using DressShopFileImplement.Models;
 
 namespace DressShopFileImplement
 {
@@ -17,16 +17,20 @@ namespace DressShopFileImplement
 		private readonly string ComponentFileName = "Component.xml";
 		private readonly string OrderFileName = "Order.xml";
 		private readonly string DressFileName = "Dress.xml";
-
+		private readonly string ClientFileName = "Client.xml";
+		private readonly string ImplementerFileName = "Implementer.xml";
 		public List<Component> Components { get; set; }
 		public List<Order> Orders { get; set; }
 		public List<Dress> Dresses { get; set; }
-
+		public List<Client> Clients { get; set; }
+		public List<Implementer> Implementers { get; set; }
 		private FileDataListSingleton()
 		{
 			Components = LoadComponents();
 			Orders = LoadOrders();
 			Dresses = LoadDresses();
+			Clients = LoadClients();
+			Implementers = LoadImplementers();
 		}
 
 		public static FileDataListSingleton GetInstance()
@@ -43,6 +47,8 @@ namespace DressShopFileImplement
 			SaveComponents();
 			SaveOrders();
 			SaveDresses();
+			SaveClients();
+			SaveImplementers();
 		}
 
 		private List<Component> LoadComponents()
@@ -88,36 +94,26 @@ namespace DressShopFileImplement
 						case "Оплачен":
 							status = (OrderStatus)3;
 							break;
-
 					}
-					if (string.IsNullOrEmpty(elem.Element("DateImplement").Value))
+					Order order = new Order
 					{
-						list.Add(new Order
-						{
-							Id = Convert.ToInt32(elem.Attribute("Id").Value),
-							DressId = Convert.ToInt32(elem.Element("DressId").Value),
-							DressName = elem.Element("DressName").Value,
-							Count = Convert.ToInt32(elem.Element("Count").Value),
-							Sum = Convert.ToDecimal(elem.Element("Sum").Value),
-							Status = status,
-							DateCreate = Convert.ToDateTime(elem.Element("DateCreate").Value)
-						});
-					}
-					else
-					{
-						list.Add(new Order
-						{
-							Id = Convert.ToInt32(elem.Attribute("Id").Value),
-							DressId = Convert.ToInt32(elem.Element("DressId").Value),
-							DressName = elem.Element("DressName").Value,
-							Count = Convert.ToInt32(elem.Element("Count").Value),
-							Sum = Convert.ToDecimal(elem.Element("Sum").Value),
-							Status = status,
-							DateCreate = Convert.ToDateTime(elem.Element("DateCreate").Value),
-							DateImplement = Convert.ToDateTime(elem.Element("DateImplement").Value)
-						});
-					}
+						Id = Convert.ToInt32(elem.Attribute("Id").Value),
+						DressId = Convert.ToInt32(elem.Element("DressId").Value),
+						Count = Convert.ToInt32(elem.Element("Count").Value),
+						Sum = Convert.ToDecimal(elem.Element("Sum").Value),
+						Status = status,
+						DateCreate = Convert.ToDateTime(elem.Element("DateCreate").Value)
+					};
 
+					if (!string.IsNullOrEmpty(elem.Element("DateImplement").Value))
+					{
+						order.DateImplement = Convert.ToDateTime(elem.Element("DateImplement").Value);
+					}
+					if (!string.IsNullOrEmpty(elem.Element("ImplementerId").Value))
+					{
+						order.ImplementerId = Convert.ToInt32(elem.Element("ImplementerId").Value);
+					}
+					list.Add(order);
 				}
 			}
 			return list;
@@ -133,11 +129,11 @@ namespace DressShopFileImplement
 				foreach (var elem in xElements)
 				{
 					var dressComponents = new Dictionary<int, int>();
-					foreach (var components in
+					foreach (var materials in
 				   elem.Element("DressComponents").Elements("DressComponents").ToList())
 					{
-						dressComponents.Add(Convert.ToInt32(components.Element("Key").Value),
-					   Convert.ToInt32(components.Element("Value").Value));
+						dressComponents.Add(Convert.ToInt32(materials.Element("Key").Value),
+					   Convert.ToInt32(materials.Element("Value").Value));
 					}
 					list.Add(new Dress
 					{
@@ -150,17 +146,56 @@ namespace DressShopFileImplement
 			}
 			return list;
 		}
-
+		private List<Client> LoadClients()
+		{
+			var list = new List<Client>();
+			if (File.Exists(ClientFileName))
+			{
+				XDocument xDocument = XDocument.Load(ClientFileName);
+				var xElements = xDocument.Root.Elements("Clients").ToList();
+				foreach (var elem in xElements)
+				{
+					list.Add(new Client
+					{
+						Id = Convert.ToInt32(elem.Attribute("Id").Value),
+						ClientFIO = elem.Element("ClientFIO").Value,
+						Email = elem.Element("Email").Value,
+						Password = elem.Element("Password").Value
+					});
+				}
+			}
+			return list;
+		}
+		private List<Implementer> LoadImplementers()
+		{
+			var list = new List<Implementer>();
+			if (File.Exists(ImplementerFileName))
+			{
+				XDocument xDocument = XDocument.Load(ImplementerFileName);
+				var xElements = xDocument.Root.Elements("Implementers").ToList();
+				foreach (var elem in xElements)
+				{
+					list.Add(new Implementer
+					{
+						Id = Convert.ToInt32(elem.Attribute("Id").Value),
+						Name = elem.Element("Name").Value,
+						WorkingTime = Convert.ToInt32(elem.Element("WorkingTime").Value),
+						PauseTime = Convert.ToInt32(elem.Element("PauseTime").Value)
+					});
+				}
+			}
+			return list;
+		}
 		private void SaveComponents()
 		{
 			if (Components != null)
 			{
 				var xElement = new XElement("Components");
-				foreach (var component in Components)
+				foreach (var material in Components)
 				{
 					xElement.Add(new XElement("Component",
-					new XAttribute("Id", component.Id),
-					new XElement("ComponentName", component.ComponentName)));
+					new XAttribute("Id", material.Id),
+					new XElement("ComponentName", material.ComponentName)));
 				}
 				XDocument xDocument = new XDocument(xElement);
 				xDocument.Save(ComponentFileName);
@@ -177,7 +212,6 @@ namespace DressShopFileImplement
 					xElement.Add(new XElement("Order",
 				 new XAttribute("Id", order.Id),
 				 new XElement("DressId", order.DressId),
-				 new XElement("DressName", order.DressName),
 				 new XElement("Count", order.Count),
 				 new XElement("Sum", order.Sum),
 				 new XElement("Status", order.Status),
@@ -197,21 +231,57 @@ namespace DressShopFileImplement
 				var xElement = new XElement("Dresses");
 				foreach (var dress in Dresses)
 				{
-					var componentElement = new XElement("DressComponents");
-					foreach (var component in dress.DressComponents)
+					var materialElement = new XElement("DressComponents");
+					foreach (var material in dress.DressComponents)
 					{
-						componentElement.Add(new XElement("DressComponents",
-						new XElement("Key", component.Key),
-						new XElement("Value", component.Value)));
+						materialElement.Add(new XElement("DressComponent",
+						new XElement("Key", material.Key),
+						new XElement("Value", material.Value)));
 					}
 					xElement.Add(new XElement("Dress",
 					 new XAttribute("Id", dress.Id),
 					 new XElement("DressName", dress.DressName),
 					 new XElement("Price", dress.Price),
-					 componentElement));
+					 materialElement));
 				}
 				XDocument xDocument = new XDocument(xElement);
 				xDocument.Save(DressFileName);
+			}
+		}
+
+		private void SaveClients()
+		{
+			if (Clients != null)
+			{
+				var xElement = new XElement("Clients");
+				foreach (var client in Clients)
+				{
+					xElement.Add(new XElement("Client",
+					new XAttribute("Id", client.Id),
+					new XElement("ClientFIO", client.ClientFIO),
+					new XElement("Email", client.Email),
+					new XElement("Password", client.Password)));
+				}
+				XDocument xDocument = new XDocument(xElement);
+				xDocument.Save(ClientFileName);
+			}
+		}
+
+		private void SaveImplementers()
+		{
+			if (Implementers != null)
+			{
+				var xElement = new XElement("Implementers");
+				foreach (var client in Implementers)
+				{
+					xElement.Add(new XElement("Implementer",
+					new XAttribute("Id", client.Id),
+					new XElement("Name", client.Name),
+					new XElement("WorkingTime", client.WorkingTime),
+					new XElement("PauseTime", client.PauseTime)));
+				}
+				XDocument xDocument = new XDocument(xElement);
+				xDocument.Save(ImplementerFileName);
 			}
 		}
 	}
