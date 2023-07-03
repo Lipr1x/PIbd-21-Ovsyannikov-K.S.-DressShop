@@ -11,6 +11,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DressShopListImplement", "r
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DressShopFileImplement", "DressShopFileImplement\DressShopFileImplement\DressShopFileImplement.csproj", "{C1EF1636-6622-4057-9E1F-C45F4761B0C1}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DressShopDatabaseImplement", "DressShopDatabaseImplement\DressShopDatabaseImplement\DressShopDatabaseImplement.csproj", "{56BAEB8E-6E70-46C5-ACA8-D4869EE8DCD5}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DressShopRestApi", "DressShopRestApi\DressShopRestApi\DressShopRestApi.csproj", "{196C45D2-3F09-4DB5-9E5A-7512B2F98C3C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DressShowClientApp", "DressShowClientApp\DressShowClientApp\DressShowClientApp.csproj", "{A4C56869-79F9-47DD-B206-95E78844798A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +39,18 @@ Global
 		{C1EF1636-6622-4057-9E1F-C45F4761B0C1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C1EF1636-6622-4057-9E1F-C45F4761B0C1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C1EF1636-6622-4057-9E1F-C45F4761B0C1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{56BAEB8E-6E70-46C5-ACA8-D4869EE8DCD5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{56BAEB8E-6E70-46C5-ACA8-D4869EE8DCD5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{56BAEB8E-6E70-46C5-ACA8-D4869EE8DCD5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{56BAEB8E-6E70-46C5-ACA8-D4869EE8DCD5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{196C45D2-3F09-4DB5-9E5A-7512B2F98C3C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{196C45D2-3F09-4DB5-9E5A-7512B2F98C3C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{196C45D2-3F09-4DB5-9E5A-7512B2F98C3C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{196C45D2-3F09-4DB5-9E5A-7512B2F98C3C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A4C56869-79F9-47DD-B206-95E78844798A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A4C56869-79F9-47DD-B206-95E78844798A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A4C56869-79F9-47DD-B206-95E78844798A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A4C56869-79F9-47DD-B206-95E78844798A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
