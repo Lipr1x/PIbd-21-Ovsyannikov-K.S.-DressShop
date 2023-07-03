@@ -9,6 +9,18 @@
     <Compile Remove="Migrations\20210318161619_InitialCreate.Designer.cs" />
     <Compile Remove="Migrations\20210318161654_InitialCreate.cs" />
     <Compile Remove="Migrations\20210318161654_InitialCreate.Designer.cs" />
+    <Compile Remove="Migrations\20210402120317_InitialCreate3.cs" />
+    <Compile Remove="Migrations\20210402120317_InitialCreate3.Designer.cs" />
+    <Compile Remove="Migrations\20210411134005_InitialCreate4.cs" />
+    <Compile Remove="Migrations\20210411134005_InitialCreate4.Designer.cs" />
+    <Compile Remove="Migrations\20210415133343_InitialCreate5.cs" />
+    <Compile Remove="Migrations\20210415133343_InitialCreate5.Designer.cs" />
+    <Compile Remove="Migrations\20210416104619_lab5.cs" />
+    <Compile Remove="Migrations\20210416104619_lab5.Designer.cs" />
+    <Compile Remove="Migrations\20210416105449_InitialCreate5.cs" />
+    <Compile Remove="Migrations\20210416105449_InitialCreate5.Designer.cs" />
+    <Compile Remove="Migrations\20210416111252_initialCreate2.cs" />
+    <Compile Remove="Migrations\20210416111252_initialCreate2.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -18,8 +30,6 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.Report.Viewer" Version="11.0.0" />
-    <PackageReference Include="Microsoft.ReportingServices.ReportViewerControl.Winforms" Version="150.1440.0" />
   </ItemGroup>
 
   <ItemGroup>
