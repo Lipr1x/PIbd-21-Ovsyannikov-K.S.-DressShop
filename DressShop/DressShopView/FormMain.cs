@@ -1,5 +1,6 @@
 ﻿using AbstractShopBusinessLogic.BindingModels;
 using AbstractShopBusinessLogic.BusinessLogics;
+using Microsoft.Reporting.WebForms;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -17,36 +18,38 @@ namespace AbstractShopView
 	{
 		[Dependency]
 		public new IUnityContainer Container { get; set; }
-		private readonly OrderLogic _orderLogic;
-		public FormMain(OrderLogic orderLogic)
-		{
-			InitializeComponent();
-			this._orderLogic = orderLogic;
-		}
-		private void FormMain_Load(object sender, EventArgs e)
-		{
-			LoadData();
-            var list = _orderLogic.Read(null);
+        private readonly OrderLogic orderLogic;
+        private readonly ReportLogic reportLogic;
+        private readonly WorkModeling workModeling;
+        private readonly BackUpAbstractLogic _backUpAbstractLogic;
+        public FormMain(OrderLogic orderLogic, ReportLogic reportLogic, WorkModeling workModeling, BackUpAbstractLogic _backUpAbstractLogic)
+        {
+            InitializeComponent();
+            this.orderLogic = orderLogic;
+            this.reportLogic = reportLogic;
+            this.workModeling = workModeling;
+            this._backUpAbstractLogic = _backUpAbstractLogic;
+            LoadData();
         }
+		
 		private void LoadData()
 		{
-			try
-			{
-                var list = _orderLogic.Read(null);
-                if (list != null)
-                {
-                    dataGridView.DataSource = list;
-                    dataGridView.Columns[0].Visible = false;
-                    dataGridView.Columns[1].Visible = false;
-                }
+            try
+            {
+                Program.ConfigGrid(orderLogic.Read(null), dataGridView);
             }
-			catch (Exception ex)
-			{
-				MessageBox.Show(ex.Message, "Ошибка", MessageBoxButtons.OK,
-			   MessageBoxIcon.Error);
-			}
-		}
-		private void КомпонентыToolStripMenuItem_Click(object sender, EventArgs e)
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK,
+               MessageBoxIcon.Error);
+            }
+        }
+        private void FormMain_Load(object sender, EventArgs e)
+        {
+            LoadData();
+        }
+
+        private void КомпонентыToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			var form = Container.Resolve<FormComponents>();
 			form.ShowDialog();
@@ -62,47 +65,7 @@ namespace AbstractShopView
 			form.ShowDialog();
 			LoadData();
 		}
-        private void ButtonTakeOrderInWork_Click(object sender, EventArgs e)
-        {
-            if (dataGridView.SelectedRows.Count == 1)
-            {
-                int id = Convert.ToInt32(dataGridView.SelectedRows[0].Cells[0].Value);
-                try
-                {
-                    _orderLogic.TakeOrderInWork(new ChangeStatusBindingModel
-                    {
-                        OrderId =
-                   id
-                    });
-                    LoadData();
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.Message, "Ошибка", MessageBoxButtons.OK,
-                   MessageBoxIcon.Error);
-                }
-            }
-        }
-        private void ButtonOrderReady_Click(object sender, EventArgs e)
-        {
-            if (dataGridView.SelectedRows.Count == 1)
-            {
-                int id = Convert.ToInt32(dataGridView.SelectedRows[0].Cells[0].Value);
-                try
-                {
-                    _orderLogic.FinishOrder(new ChangeStatusBindingModel
-                    {
-                        OrderId = id
-                    });
-                    LoadData();
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.Message, "Ошибка", MessageBoxButtons.OK,
-                   MessageBoxIcon.Error);
-                }
-            }
-        }
+               
         private void ButtonPayOrder_Click(object sender, EventArgs e)
         {
             if (dataGridView.SelectedRows.Count == 1)
@@ -110,7 +73,7 @@ namespace AbstractShopView
                 int id = Convert.ToInt32(dataGridView.SelectedRows[0].Cells[0].Value);
                 try
                 {
-                    _orderLogic.PayOrder(new ChangeStatusBindingModel { OrderId = id });
+                    orderLogic.PayOrder(new ChangeStatusBindingModel { OrderId = id });
                     LoadData();
                 }
                 catch (Exception ex)
@@ -125,5 +88,78 @@ namespace AbstractShopView
 			LoadData();
 		}
 
-	}
+        private void компонентыПоПлатьямToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var form = Container.Resolve<FormReportDressComponents>();
+            form.ShowDialog();
+        }
+
+        private void списокКомпонентовToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            using (var dialog = new SaveFileDialog { Filter = "docx|*.docx" })
+            {
+                if (dialog.ShowDialog() == DialogResult.OK)
+                {
+                    reportLogic.SaveComponentsToWordFile(new ReportBindingModel
+                    {
+                        FileName = dialog.FileName
+                    });
+                    MessageBox.Show("Выполнено", "Успех", MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
+                }
+            }
+        }
+
+        private void списокЗаказовToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var form = Container.Resolve<FormReportOrders>();
+            form.ShowDialog();
+        }
+
+        private void запускРаботToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            workModeling.DoWork();
+            LoadData();
+        }
+
+        private void исполнителиToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var form = Container.Resolve<FormImplementers>();
+            form.ShowDialog();
+        }
+
+        private void письмаToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var form = Container.Resolve<FormMessages>();
+            form.ShowDialog();
+        }
+
+        private void клиентыToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var form = Container.Resolve<FormClients>();
+            form.ShowDialog();
+        }
+
+        private void создатьБэкапToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (_backUpAbstractLogic != null)
+                {
+                    var fbd = new FolderBrowserDialog();
+                    if (fbd.ShowDialog() == DialogResult.OK)
+                    {
+                        _backUpAbstractLogic.CreateArchive(fbd.SelectedPath);
+                        MessageBox.Show("Backup created", "Message",
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK,
+               MessageBoxIcon.Error);
+            }
+        }        
+    }
 }
