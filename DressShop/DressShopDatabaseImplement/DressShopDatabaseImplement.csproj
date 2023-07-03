@@ -1,0 +1,39 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Migrations\20210318161619_InitialCreate.cs" />
+    <Compile Remove="Migrations\20210318161619_InitialCreate.Designer.cs" />
+    <Compile Remove="Migrations\20210318161654_InitialCreate.cs" />
+    <Compile Remove="Migrations\20210318161654_InitialCreate.Designer.cs" />
+    <Compile Remove="Migrations\20210402120317_InitialCreate3.cs" />
+    <Compile Remove="Migrations\20210402120317_InitialCreate3.Designer.cs" />
+    <Compile Remove="Migrations\20210411134005_InitialCreate4.cs" />
+    <Compile Remove="Migrations\20210411134005_InitialCreate4.Designer.cs" />
+    <Compile Remove="Migrations\20210415133343_InitialCreate5.cs" />
+    <Compile Remove="Migrations\20210415133343_InitialCreate5.Designer.cs" />
+    <Compile Remove="Migrations\20210416104619_lab5.cs" />
+    <Compile Remove="Migrations\20210416104619_lab5.Designer.cs" />
+    <Compile Remove="Migrations\20210416105449_InitialCreate5.cs" />
+    <Compile Remove="Migrations\20210416105449_InitialCreate5.Designer.cs" />
+    <Compile Remove="Migrations\20210416111252_initialCreate2.cs" />
+    <Compile Remove="Migrations\20210416111252_initialCreate2.Designer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.1.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\AbstractShopBusinessLogic\DressShopBusinessLogic.csproj" />
+  </ItemGroup>
+
+</Project>
