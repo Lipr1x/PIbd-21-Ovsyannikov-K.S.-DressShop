@@ -1,7 +1,8 @@
 ﻿using AbstractShopBusinessLogic.BindingModels;
+using AbstractShopBusinessLogic.Enums;
 using AbstractShopBusinessLogic.Interfaces;
 using AbstractShopBusinessLogic.ViewModels;
-using DressShopListImplement;
+using DressShopFileImplement.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,40 +12,18 @@ namespace DressShopFileImplement.Implements
 {
     public class OrderStorage : IOrderStorage
     {
-        private readonly DataListSingleton source;
+        private readonly FileDataFileSingleton source;
 
         public OrderStorage()
         {
-            source = DataListSingleton.GetInstance();
+            source = FileDataFileSingleton.GetInstance();
         }
 
-        public void Delete(OrderBindingModel model)
+        public List<OrderViewModel> GetFullList()
         {
-            for (int i = 0; i < source.Orders.Count; ++i)
-            {
-                if (source.Orders[i].Id == model.Id)
-                {
-                    source.Orders.RemoveAt(i);
-                    return;
-                }
-            }
-            throw new Exception("Element not found");
-        }
-
-        public OrderViewModel GetElement(OrderBindingModel model)
-        {
-            if (model == null)
-            {
-                return null;
-            }
-            foreach (var order in source.Orders)
-            {
-                if (order.Id == model.Id)
-                {
-                    return CreateModel(order);
-                }
-            }
-            return null;
+            return source.Orders
+            .Select(CreateModel)
+            .ToList();
         }
 
         public List<OrderViewModel> GetFilteredList(OrderBindingModel model)
@@ -53,63 +32,63 @@ namespace DressShopFileImplement.Implements
             {
                 return null;
             }
-            List<OrderViewModel> result = new List<OrderViewModel>();
-            foreach (var order in source.Orders)
-            {
-                if (order.DateCreate.Equals(model.DateCreate))
-                {
-                    result.Add(CreateModel(order));
-                }
-            }
-            return result;
+            return source.Orders.Where(rec => (!model.DateFrom.HasValue &&
+               !model.DateTo.HasValue && rec.DateCreate.Date == model.DateCreate.Date) ||
+               (model.DateFrom.HasValue && model.DateTo.HasValue && rec.DateCreate.Date >=
+               model.DateFrom.Value.Date && rec.DateCreate.Date <= model.DateTo.Value.Date) ||
+               (model.ClientId.HasValue && rec.ClientId == model.ClientId) ||
+               (model.FreeOrders.HasValue && model.FreeOrders.Value && rec.Status == OrderStatus.Принят) ||
+               (model.ImplementerId.HasValue && rec.ImplementerId == model.ImplementerId && rec.Status == OrderStatus.Выполняется))
+               .Select(CreateModel)
+               .ToList();
         }
 
-        public List<OrderViewModel> GetFullList()
+        public OrderViewModel GetElement(OrderBindingModel model)
         {
-            List<OrderViewModel> result = new List<OrderViewModel>();
-            foreach (var order in source.Orders)
+            if (model == null)
             {
-                result.Add(CreateModel(order));
+                return null;
             }
-            return result;
+            var Order = source.Orders
+            .FirstOrDefault(rec => rec.Id == model.Id);
+            return Order != null ? CreateModel(Order) : null;
         }
 
         public void Insert(OrderBindingModel model)
         {
-            Order tempOrder = new Order
-            {
-                Id = 1,
-            };
-            foreach (var order in source.Orders)
-            {
-                if (order.Id >= tempOrder.Id)
-                {
-                    tempOrder.Id = order.Id + 1;
-                }
-            }
-            source.Orders.Add(CreateModel(model, tempOrder));
+            int maxId = source.Orders.Count > 0 ? source.Orders.Max(rec => rec.Id) : 0;
+            var element = new Order { Id = maxId + 1 };
+            source.Orders.Add(CreateModel(model, element));
         }
 
         public void Update(OrderBindingModel model)
         {
-            Order tempOrder = null;
-            foreach (var order in source.Orders)
+            var element = source.Orders.FirstOrDefault(rec => rec.Id == model.Id);
+            if (element == null)
             {
-                if (order.Id == model.Id)
-                {
-                    tempOrder = order;
-                }
+                throw new Exception("Элемент не найден");
             }
-            if (tempOrder == null)
+            CreateModel(model, element);
+        }
+
+        public void Delete(OrderBindingModel model)
+        {
+            Order element = source.Orders.FirstOrDefault(rec => rec.Id == model.Id);
+            if (element != null)
             {
-                throw new Exception("Element not found");
+                source.Orders.Remove(element);
             }
-            CreateModel(model, tempOrder);
+            else
+            {
+                throw new Exception("Элемент не найден");
+            }
         }
 
         private Order CreateModel(OrderBindingModel model, Order order)
         {
             order.DressId = model.DressId;
+            order.ClientId = model.ClientId.Value;
+            order.ImplementerId = model.ImplementerId.Value;
             order.Count = model.Count;
             order.Status = model.Status;
             order.Sum = model.Sum;
@@ -124,12 +103,16 @@ namespace DressShopFileImplement.Implements
             {
                 Id = order.Id,
                 DressId = order.DressId,
-                DressName = source.Dresses.FirstOrDefault(Dress => Dress.Id == order.DressId).DressName,
+                ClientId = order.ClientId.Value,
+                ClientFIO = source.Clients.FirstOrDefault(client => client.Id == order.ClientId)?.ClientFIO,
+                DressName = source.Dresses.FirstOrDefault(gift => gift.Id == order.DressId)?.DressName,
+                ImplementerId = order.ImplementerId.Value,
+                ImplementerName = source.Implementers.FirstOrDefault(implementer => implementer.Id == order.ImplementerId)?.Name,
                 Count = order.Count,
-                Sum = order.Sum,    
+                Sum = order.Sum,
                 Status = order.Status,
                 DateCreate = order.DateCreate,
-                DateImplement = order.DateImplement
+                DateImplement = order?.DateImplement
             };
         }
     }

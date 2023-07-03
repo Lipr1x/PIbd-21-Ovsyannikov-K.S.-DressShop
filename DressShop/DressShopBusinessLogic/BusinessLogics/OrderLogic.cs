@@ -1,5 +1,6 @@
 ﻿using AbstractShopBusinessLogic.BindingModels;
 using AbstractShopBusinessLogic.Enums;
+using AbstractShopBusinessLogic.HelperModels;
 using AbstractShopBusinessLogic.Interfaces;
 using AbstractShopBusinessLogic.ViewModels;
 using System;
@@ -11,6 +12,15 @@ namespace AbstractShopBusinessLogic.BusinessLogics
     public class OrderLogic
     {
         private readonly IOrderStorage _orderStorage;
+        private readonly IClientStorage _clientStorage;
+        private readonly object locker = new object();
+
+        public OrderLogic(IOrderStorage orderStorage, IClientStorage clientStorage)
+
+        {
+            _orderStorage = orderStorage;
+            _clientStorage = clientStorage;
+        }
         public OrderLogic(IOrderStorage orderStorage)
         {
             _orderStorage = orderStorage;
@@ -27,55 +37,72 @@ namespace AbstractShopBusinessLogic.BusinessLogics
             }
             return _orderStorage.GetFilteredList(model);
         }
+
         public void CreateOrder(CreateOrderBindingModel model)
         {
             _orderStorage.Insert(new OrderBindingModel
             {
                 DressId = model.DressId,
-                DressName = model.DressName,
+                ClientId = model.ClientId,
                 Count = model.Count,
                 Sum = model.Sum,
                 DateCreate = DateTime.Now,
                 Status = OrderStatus.Принят
             });
+            MailLogic.MailSendAsync(new MailSendInfo
+            {
+                MailAddress = _clientStorage.GetElement(new ClientBindingModel { Id = model.ClientId })?.Email,
+                Subject = $"Новый заказ",
+                Text = $"Заказ от {DateTime.Now} на сумму {model.Sum:N2} принят."
+            });
         }
+
         public void TakeOrderInWork(ChangeStatusBindingModel model)
         {
-            var order = _orderStorage.GetElement(new OrderBindingModel
+            lock (locker)
             {
-                Id =
-           model.OrderId
-            });
-            if (order == null)
-            {
-                throw new Exception("Не найден заказ");
+                var order = _orderStorage.GetElement(new OrderBindingModel
+                {
+                    Id = model.OrderId
+                });
+                if (order == null)
+                {
+                    throw new Exception("Не найден заказ");
+                }
+                if (order.Status != OrderStatus.Принят)
+                {
+                    throw new Exception("Заказ не в статусе \"Принят\"");
+                }
+                if (order.ImplementerId.HasValue)
+                {
+                    throw new Exception("У заказа уже есть исполнитель");
+                }
+                _orderStorage.Update(new OrderBindingModel
+                {
+                    Id = order.Id,
+                    DressId = order.DressId,
+                    ClientId = order.ClientId,
+                    ImplementerId = model.ImplementerId,
+                    Count = order.Count,
+                    Sum = order.Sum,
+                    DateCreate = order.DateCreate,
+                    Status = OrderStatus.Выполняется
+                });
+                MailLogic.MailSendAsync(new MailSendInfo
+                {
+                    MailAddress = _clientStorage.GetElement(new ClientBindingModel { Id = order.ClientId })?.Email,
+                    Subject = $"Заказ №{order.Id}",
+                    Text = $"Заказ №{order.Id} передан в работу."
+                });
             }
-            if (order.Status != OrderStatus.Принят)
-            {
-                throw new Exception("Заказ не в статусе \"Принят\"");
-            }
-            _orderStorage.Update(new OrderBindingModel
-            {
-                Id = order.Id,
-                DressId = order.DressId,
-                DressName = order.DressName,
-                Count = order.Count,
-                Sum = order.Sum,
-                DateCreate = order.DateCreate,
-                DateImplement = DateTime.Now,
-                Status = OrderStatus.Выполняется
-            });
         }
+
         public void FinishOrder(ChangeStatusBindingModel model)
         {
-            var order = _orderStorage.GetElement(new OrderBindingModel
-            {
-                Id =
-           model.OrderId
-            });
+            var order = _orderStorage.GetElement(new OrderBindingModel { Id = model.OrderId });
             if (order == null)
             {
-                throw new Exception("Не найден заказ");
+                throw new Exception("Заказ не найден");
             }
             if (order.Status != OrderStatus.Выполняется)
             {
@@ -85,23 +112,28 @@ namespace AbstractShopBusinessLogic.BusinessLogics
             {
                 Id = order.Id,
                 DressId = order.DressId,
-                DressName = order.DressName,
+                ClientId = order.ClientId,
+                ImplementerId = order.ImplementerId,
                 Count = order.Count,
                 Sum = order.Sum,
                 DateCreate = order.DateCreate,
-                DateImplement = order.DateImplement,
+                DateImplement = DateTime.Now,
                 Status = OrderStatus.Готов
             });
+            MailLogic.MailSendAsync(new MailSendInfo
+            {
+                MailAddress = _clientStorage.GetElement(new ClientBindingModel { Id = order.ClientId })?.Email,
+                Subject = $"Заказ №{order.Id}",
+                Text = $"Заказ №{order.Id} выполнен."
+            });
         }
+
         public void PayOrder(ChangeStatusBindingModel model)
         {
-            var order = _orderStorage.GetElement(new OrderBindingModel
-            {
-                Id = model.OrderId
-            });
+            var order = _orderStorage.GetElement(new OrderBindingModel { Id = model.OrderId });
             if (order == null)
             {
-                throw new Exception("Не найден заказ");
+                throw new Exception("Заказ не найден");
             }
             if (order.Status != OrderStatus.Готов)
             {
@@ -111,12 +143,19 @@ namespace AbstractShopBusinessLogic.BusinessLogics
             {
                 Id = order.Id,
                 DressId = order.DressId,
-                DressName = order.DressName,
+                ClientId = order.ClientId,
+                ImplementerId = order.ImplementerId,
                 Count = order.Count,
                 Sum = order.Sum,
                 DateCreate = order.DateCreate,
                 DateImplement = order.DateImplement,
                 Status = OrderStatus.Оплачен
+            });
+            MailLogic.MailSendAsync(new MailSendInfo
+            {
+                MailAddress = _clientStorage.GetElement(new ClientBindingModel { Id = order.ClientId })?.Email,
+                Subject = $"Заказ №{order.Id}",
+                Text = $"Заказ №{order.Id} оплачен."
             });
         }
     }
