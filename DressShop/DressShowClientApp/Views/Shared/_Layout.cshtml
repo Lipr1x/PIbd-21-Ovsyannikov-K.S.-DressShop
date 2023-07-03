@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - CarFactoryClientApp</title>
+    <title>@ViewData["Title"] - DressShopClientApp</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" />
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
@@ -14,8 +14,8 @@
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white
 border-bottom box-shadow mb-3">
             <div class="container">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" aspaction="Index">Car factory</a>
-                <button class="navbar-toggler" type="button" data-toggle="collapse" datatarget=".navbar-collapse" aria-controls="navbarSupportedContent"
+                <a class="navbar-brand" asp-area="" asp-controller="Home" aspaction="Index">Магазин платьев</a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" datatarget=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
@@ -23,19 +23,23 @@ border-bottom box-shadow mb-3">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area=""
-                               asp-controller="Home" asp-action="Index">Orders</a>
+                               asp-controller="Home" asp-action="Index">Заказы</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area=""
-                               asp-controller="Home" asp-action="Privacy">Personal data</a>
+                               asp-controller="Home" asp-action="Privacy">Личные данные</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area=""
-                               asp-controller="Home" asp-action="Enter">Sign In</a>
+                               asp-controller="Home" asp-action="Enter">Вход</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area=""
-                               asp-controller="Home" asp-action="Register">Sign Up</a>
+                               asp-controller="Home" asp-action="Register">Регистрация</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area=""
+                               asp-controller="Home" asp-action="Mail">Письма</a>
                         </li>
                     </ul>
                 </div>
@@ -49,7 +53,7 @@ border-bottom box-shadow mb-3">
     </div>
     <footer class="border-top footer text-muted">
         <div class="container">
-            &copy; 2021 - Car factory - <a asp-area="" aspcontroller="Home" asp-action="Privacy">Personal data</a>
+            &copy; 2020 - Магазин платьев - <a asp-area="" aspcontroller="Home" asp-action="Privacy">Личные данные</a>
         </div>
     </footer>
     <script src="~/js/site.js" asp-append-version="true"></script>

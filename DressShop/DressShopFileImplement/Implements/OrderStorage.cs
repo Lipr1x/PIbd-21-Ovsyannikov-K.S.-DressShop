@@ -12,11 +12,11 @@ namespace DressShopFileImplement.Implements
 {
     public class OrderStorage : IOrderStorage
     {
-        private readonly FileDataListSingleton source;
+        private readonly FileDataFileSingleton source;
 
         public OrderStorage()
         {
-            source = FileDataListSingleton.GetInstance();
+            source = FileDataFileSingleton.GetInstance();
         }
 
         public List<OrderViewModel> GetFullList()
